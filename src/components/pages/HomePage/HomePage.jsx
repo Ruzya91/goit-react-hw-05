@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchTrendingMovies } from "../../api/tmdb";
-import MovieList from "../../components/MovieList/MovieList";
+import { fetchTrendingMovies } from "../../../api/tmdb";
+import MovieList from "../../MovieList/MovieList";
 
 const HomePage = () => {
   const [movies, setMovies] = useState([]);
