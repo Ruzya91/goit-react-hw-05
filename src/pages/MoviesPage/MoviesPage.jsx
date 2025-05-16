@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { searchMovies } from "../../../api/tmdb";
-import MovieList from "../../MovieList/MovieList";
+import { searchMovies } from "../../api/tmdb";
+import MovieList from "../../components/MovieList/MovieList";
 
 const MoviesPage = () => {
   const [query, setQuery] = useState("");
