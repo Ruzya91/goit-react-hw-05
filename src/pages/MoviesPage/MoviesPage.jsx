@@ -1,30 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { searchMovies } from "../../api/tmdb";
 import MovieList from "../../components/MovieList/MovieList";
 
 const MoviesPage = () => {
-  const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const query = searchParams.get("query") || "";
+
+  useEffect(() => {
     if (!query.trim()) return;
-    try {
-      const movies = await searchMovies(query);
-      setResults(movies);
-    } catch (err) {
-      console.error(err);
-    }
+
+    const fetchMovies = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const movies = await searchMovies(query);
+        setResults(movies);
+      } catch (error) {
+        setError("Error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, [query]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const searchValue = form.elements.query.value.trim();
+
+    if (searchValue === "") return;
+
+    setSearchParams({ query: searchValue });
   };
 
   return (
     <div>
-      <h1>Search Movies</h1>
       <form onSubmit={handleSubmit}>
-        <input value={query} onChange={(e) => setQuery(e.target.value)} />
+        <input
+          type="text"
+          name="query"
+          placeholder="Search movies..."
+          defaultValue={query}
+        />
         <button type="submit">Search</button>
       </form>
-      <MovieList movies={results} />
+
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      {results.length > 0 && <MovieList movies={results} />}
     </div>
   );
 };

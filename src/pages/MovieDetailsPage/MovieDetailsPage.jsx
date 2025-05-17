@@ -1,10 +1,12 @@
 import { useParams, Link, Outlet, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getMovieDetails } from "../../api/tmdb";
 
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
   const location = useLocation();
+  const backLinkRef = useRef(location.state?.from || "/movies");
+
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,8 +27,6 @@ const MovieDetailsPage = () => {
       .finally(() => setLoading(false));
   }, [movieId]);
 
-  const backLink = location.state?.from || "/movies";
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (!movie) return <div>No movie data found</div>;
@@ -37,7 +37,7 @@ const MovieDetailsPage = () => {
 
   return (
     <div>
-      <Link to={backLink}>🔙 Go back</Link>
+      <Link to={backLinkRef.current}>🔙 Go back</Link>
 
       <h1>{movie.title}</h1>
 
